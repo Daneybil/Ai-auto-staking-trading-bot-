@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Loader2, Bot, User as UserIcon } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
@@ -24,29 +23,45 @@ export const ChatBot: React.FC = () => {
   }, [messages, isTyping]);
 
   const handleSend = async () => {
-    if (!input.trim() || isTyping) return;
+    const promptText = input.trim();
+    if (!promptText || isTyping) return;
 
-    const userMessage: Message = { role: 'user', text: input };
+    const userMessage: Message = { role: 'user', text: promptText };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: (process.env as any).API_KEY });
+      const apiKey = process.env.API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key configuration missing. Please set API_KEY in environment variables.");
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       const chat = ai.chats.create({
         model: 'gemini-3-pro-preview',
         config: {
-          systemInstruction: 'You are the official AI Auto Staking Assistant. You help users with crypto staking, trading bots, and profit accumulation. You are bold, professional, and focus on the 10% hourly profit model for 2026. Always remind users of the 90-day lockup for security. Do not provide specific financial advice outside the platform scope.',
+          systemInstruction: `You are the AI Auto Staking Assistant. 
+          Key Platform Details:
+          - 10% Hourly Profit Model active for 2026.
+          - 90-Day mandatory lockup period for security.
+          - Assets consolidated in high-security TRC20/BEP20 vaults.
+          - Mission: Unlimited earnings for every user.
+          Tone: Bold, professional, institutional, and highly optimistic about 2026 targets.`,
         },
       });
 
-      const response = await chat.sendMessage({ message: input });
+      const response = await chat.sendMessage({ message: promptText });
       const modelText = response.text || "I am currently processing market data. Please try again in a moment.";
       
       setMessages(prev => [...prev, { role: 'model', text: modelText }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat error:', error);
-      setMessages(prev => [...prev, { role: 'model', text: 'System busy. Please ensure your connection to the Neural Core is stable.' }]);
+      let errorMessage = "System busy. Connection to Neural Core unstable.";
+      if (error.message?.includes("API_KEY")) {
+        errorMessage = "Cloud connection error: API Key not detected in deployment environment.";
+      }
+      setMessages(prev => [...prev, { role: 'model', text: errorMessage }]);
     } finally {
       setIsTyping(false);
     }
@@ -54,7 +69,6 @@ export const ChatBot: React.FC = () => {
 
   return (
     <>
-      {/* Floating Toggle Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-8 right-8 z-[100] bg-[#F0B90B] text-black p-5 rounded-full shadow-[0_15px_40px_rgba(240,185,11,0.4)] hover:scale-110 active:scale-95 transition-all border-4 border-black group"
@@ -62,10 +76,8 @@ export const ChatBot: React.FC = () => {
         {isOpen ? <X size={32} /> : <MessageSquare size={32} className="group-hover:rotate-12 transition-transform" />}
       </button>
 
-      {/* Chat Window */}
       {isOpen && (
         <div className="fixed bottom-28 right-8 w-[90vw] md:w-[450px] h-[600px] bg-[#1e2329] border-4 border-[#2b2f36] rounded-[2.5rem] shadow-2xl z-[100] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300">
-          {/* Header */}
           <div className="bg-[#F0B90B] p-6 flex items-center justify-between border-b-4 border-black">
             <div className="flex items-center gap-3">
               <div className="bg-black p-2 rounded-xl">
@@ -73,7 +85,7 @@ export const ChatBot: React.FC = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-black font-black uppercase text-sm tracking-tighter">AI Core Neural Assistant</span>
-                <span className="text-[10px] text-black/60 font-black uppercase">Status: Online & Scanning</span>
+                <span className="text-[10px] text-black/60 font-black uppercase">2026 Protocol: Active</span>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-black/50 hover:text-black transition-colors">
@@ -81,7 +93,6 @@ export const ChatBot: React.FC = () => {
             </button>
           </div>
 
-          {/* Messages Container */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -99,13 +110,12 @@ export const ChatBot: React.FC = () => {
               <div className="flex justify-start">
                 <div className="bg-[#0b0e11] p-4 rounded-2xl flex items-center gap-3">
                   <Loader2 className="animate-spin text-[#F0B90B]" size={16} />
-                  <span className="text-[10px] font-black uppercase text-[#F0B90B] tracking-widest">Bot is thinking...</span>
+                  <span className="text-[10px] font-black uppercase text-[#F0B90B] tracking-widest">Neural Scan in progress...</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Input Area */}
           <div className="p-6 border-t-4 border-[#2b2f36] bg-[#0b0e11]">
             <div className="relative flex items-center gap-3">
               <input 
@@ -113,13 +123,13 @@ export const ChatBot: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Ask about AI Staking..."
+                placeholder="Ask about 2026 earnings..."
                 className="flex-1 bg-[#1e2329] border-2 border-[#2b2f36] rounded-2xl p-4 pr-16 outline-none focus:border-[#F0B90B] transition-all font-bold uppercase text-xs placeholder:text-[#848e9c]"
               />
               <button 
                 onClick={handleSend}
                 disabled={isTyping}
-                className="absolute right-2 p-3 bg-[#F0B90B] text-black rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+                className="absolute right-2 p-3 bg-[#F0B90B] text-black rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl disabled:opacity-50"
               >
                 <Send size={20} />
               </button>

