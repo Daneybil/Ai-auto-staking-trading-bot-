@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User, TradeLog, CryptoPrice } from '../types';
 import { Wallet, History, TrendingUp, Share2, Timer, CheckCircle2, Lock, Unlock, BarChart3, ChevronDown, Loader2, ScanLine, ArrowDownCircle, AlertCircle, Users, Copy } from 'lucide-react';
@@ -79,7 +80,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
             setLogs(prevLogs => [{
               id: Math.random().toString(36).substring(7),
               asset: 'USDT',
-              type: 'BUY',
+              type: 'BUY' as const,
               amount: user.depositedAmount,
               profit: profit,
               timestamp: Date.now()
@@ -188,7 +189,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, setUser }) => {
             </div>
           </div>
 
-          {/* Restored Withdrawal Section with Max Visibility */}
           <div className="bg-[#1e2329] p-12 rounded-[3.5rem] border-4 border-[#2b2f36] shadow-2xl relative overflow-hidden group hover:border-[#F0B90B] transition-all">
              <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:scale-110 transition-transform"><ArrowDownCircle size={240} /></div>
              <h3 className="text-4xl font-black mb-10 flex items-center gap-4 uppercase tracking-tighter"><ArrowDownCircle size={40} className="text-[#F0B90B]" /> Withdrawal Portal</h3>
